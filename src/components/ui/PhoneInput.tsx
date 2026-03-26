@@ -35,7 +35,7 @@ export default function PhoneInput({ value, onChange }: Props) {
 
   return (
     <div className="relative flex items-center border-b border-black/60">
-      <button
+      {/* <button
         type="button"
         onClick={() => setOpen((v) => !v)}
         className="flex items-center gap-1 py-[10px] pr-2 shrink-0"
@@ -48,7 +48,7 @@ export default function PhoneInput({ value, onChange }: Props) {
         />
         <span className="text-[12px]">▲</span>
         <span className="text-[14px]">{selectedCountry.phoneCode}</span>
-      </button>
+      </button> */}
 
       <input
         value={value}

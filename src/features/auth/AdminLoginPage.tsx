@@ -39,7 +39,7 @@ export default function AdminLoginPage() {
     }, 1000);
   };
   const handleResend = async () => {
-    await resendCode(tempToken); // tempToken вже є в стейті
+    await resendCode(tempToken);
     startCountdown();
   };
   const handleVerify = async () => {
@@ -80,7 +80,10 @@ export default function AdminLoginPage() {
             </div>
 
             <div className="flex justify-end">
-              <button onClick={handleSendCode} className="font-medium">
+              <button
+                onClick={handleSendCode}
+                className="font-semibold text-[24px] font-mono cursor-pointer transition-transform hover:scale-105"
+              >
                 [SEND CODE]
               </button>
             </div>
@@ -111,18 +114,21 @@ export default function AdminLoginPage() {
             {canResend ? (
               <button
                 onClick={handleResend}
-                className="text-[12px] font-mono underline"
+                className="text-[12px] font-mono underline mb-6 cursor-pointer hover:text-[var(--color-red)] transition-colors"
               >
                 Resend code
               </button>
             ) : (
-              <div className="text-[12px] font-mono">
+              <div className="text-[12px] mb-6 font-medium font-mono text-black">
                 Resend code in 00:{String(countdown).padStart(2, "0")}
               </div>
             )}
 
             <div className="flex justify-end">
-              <button onClick={handleVerify} className="font-medium">
+              <button
+                onClick={handleVerify}
+                className="font-semibold text-[24px] font-mono cursor-pointer transition-transform hover:scale-105"
+              >
                 [CONFIRM AND PROCEED]
               </button>
             </div>

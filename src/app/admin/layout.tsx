@@ -9,11 +9,11 @@ const adminItems: {
 }[] = [
   { label: "Accounts", href: "/admin/accounts", icon: "accounts" },
   { label: "Orders", href: "/admin/orders", icon: "orders" },
-  { label: "Users", href: "/users", icon: "users" },
-  { label: "Payment Link", href: "/payment-link", icon: "payment" },
-  { label: "Create", href: "/create", icon: "create" },
-  { label: "Create wallet", href: "/create-wallet", icon: "wallet" },
-  { label: "Stats", href: "/stats", icon: "stats" },
+  // { label: "Users", href: "/users", icon: "users" },
+  // { label: "Payment Link", href: "/payment-link", icon: "payment" },
+  // { label: "Create", href: "/create", icon: "create" },
+  // { label: "Create wallet", href: "/create-wallet", icon: "wallet" },
+  // { label: "Stats", href: "/stats", icon: "stats" },
 ];
 
 export default function AdminLayout({

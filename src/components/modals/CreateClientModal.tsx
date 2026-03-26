@@ -1,23 +1,55 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Modal from "@/components/ui/Modal";
 import Logo from "@/components/ui/icons/Logo";
 import IndividualForm from "./IndividualForm";
 import CompanyForm from "./CompanyForm";
-import { individualService } from "@/services/individualService";
-import { companyService } from "@/services/companyService";
+import { useAdminCreateClient } from "@/hooks/useAdminCreateClient";
+
+type Tab = "individual" | "company";
 
 type Props = {
   open: boolean;
   onClose: () => void;
+  editData?: {
+    userId: string;
+    userType: "INDIVIDUAL" | "COMPANY";
+    individual?: {
+      fullName: string;
+      country: string;
+      phone: string;
+      email: string;
+    };
+    company?: {
+      companyName: string;
+      registrationNumber: string;
+      country: string;
+      contactPerson: string;
+      email: string;
+      phone: string;
+    };
+  };
+  onSuccess?: () => void;
 };
 
-type Tab = "individual" | "company";
-
-export default function CreateClientModal({ open, onClose }: Props) {
-  const [tab, setTab] = useState<Tab>("individual");
-  const [loading, setLoading] = useState(false);
+export default function CreateClientModal({
+  open,
+  onClose,
+  editData,
+  onSuccess,
+}: Props) {
+  const isEdit = !!editData;
+  const [tab, setTab] = useState<Tab>(
+    editData?.userType === "COMPANY" ? "company" : "individual",
+  );
+  const {
+    createIndividual,
+    createCompany,
+    updateIndividual,
+    updateCompany,
+    loading,
+  } = useAdminCreateClient();
 
   const [individualForm, setIndividualForm] = useState({
     fullName: "",
@@ -35,27 +67,49 @@ export default function CreateClientModal({ open, onClose }: Props) {
     phone: "",
   });
 
-  const handleIndividualChange = (field: string, val: string) => {
-    setIndividualForm((prev) => ({ ...prev, [field]: val }));
-  };
-
-  const handleCompanyChange = (field: string, val: string) => {
-    setCompanyForm((prev) => ({ ...prev, [field]: val }));
-  };
+  useEffect(() => {
+    if (!editData) return;
+    setTab(editData.userType === "COMPANY" ? "company" : "individual");
+    if (editData.individual) {
+      setIndividualForm(editData.individual);
+    }
+    if (editData.company) {
+      setCompanyForm(editData.company);
+    }
+  }, [editData]);
 
   const handleSubmit = async () => {
-    try {
-      setLoading(true);
+    let success = false;
+
+    if (isEdit && editData) {
       if (tab === "individual") {
-        await individualService.createProfile(individualForm);
+        success = await updateIndividual(editData.userId, {
+          ...individualForm,
+          phone: individualForm.phone.replace(/\s+/g, ""),
+        });
       } else {
-        await companyService.createProfile(companyForm);
+        success = await updateCompany(editData.userId, {
+          ...companyForm,
+          phone: companyForm.phone.replace(/\s+/g, ""),
+        });
       }
+    } else {
+      if (tab === "individual") {
+        success = await createIndividual({
+          ...individualForm,
+          phone: individualForm.phone.replace(/\s+/g, ""),
+        });
+      } else {
+        success = await createCompany({
+          ...companyForm,
+          phone: companyForm.phone.replace(/\s+/g, ""),
+        });
+      }
+    }
+
+    if (success) {
+      onSuccess?.();
       onClose();
-    } catch (e) {
-      console.error(e);
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -64,31 +118,38 @@ export default function CreateClientModal({ open, onClose }: Props) {
       <div className="flex justify-between items-center mb-8">
         <Logo width={75} height={26} />
 
-        <div className="flex">
-          <button
-            onClick={() => setTab("individual")}
-            className={`w-[98px] h-[48px] border border-[var(--color-dark-red)] border-r-0 text-[14px] font-medium
-            ${tab === "individual" ? "bg-[var(--color-red)] text-white" : "bg-white text-black hover:bg-[var(--color-red)] hover:text-white"}`}
-          >
-            INDIVIDUAL
-          </button>
-          <button
-            onClick={() => setTab("company")}
-            className={`w-[98px] h-[48px] border border-[var(--color-dark-red)] text-[14px] font-medium
-            ${tab === "company" ? "bg-[var(--color-red)] text-white" : "bg-white text-black hover:bg-[var(--color-red)] hover:text-white"}`}
-          >
-            COMPANY
-          </button>
-        </div>
+        {!isEdit && (
+          <div className="flex">
+            <button
+              onClick={() => setTab("individual")}
+              className={`w-[98px] h-[48px] border border-[var(--color-dark-red)] border-r-0 text-[14px] font-medium
+              ${tab === "individual" ? "bg-[var(--color-red)] text-white" : "bg-white text-black hover:bg-[var(--color-red)] hover:text-white"}`}
+            >
+              INDIVIDUAL
+            </button>
+            <button
+              onClick={() => setTab("company")}
+              className={`w-[98px] h-[48px] border border-[var(--color-dark-red)] text-[14px] font-medium
+              ${tab === "company" ? "bg-[var(--color-red)] text-white" : "bg-white text-black hover:bg-[var(--color-red)] hover:text-white"}`}
+            >
+              COMPANY
+            </button>
+          </div>
+        )}
       </div>
 
       {tab === "individual" ? (
         <IndividualForm
           value={individualForm}
-          onChange={handleIndividualChange}
+          onChange={(f, v) =>
+            setIndividualForm((prev) => ({ ...prev, [f]: v }))
+          }
         />
       ) : (
-        <CompanyForm value={companyForm} onChange={handleCompanyChange} />
+        <CompanyForm
+          value={companyForm}
+          onChange={(f, v) => setCompanyForm((prev) => ({ ...prev, [f]: v }))}
+        />
       )}
 
       <div className="flex justify-end mt-[41px]">
@@ -97,7 +158,11 @@ export default function CreateClientModal({ open, onClose }: Props) {
           disabled={loading}
           className="text-[var(--color-red)] font-bold text-[24px]"
         >
-          {loading ? "[LOADING...]" : "[CONFIRM AND PROCEED]"}
+          {loading
+            ? "[LOADING...]"
+            : isEdit
+              ? "[SAVE CHANGES]"
+              : "[CONFIRM AND PROCEED]"}
         </button>
       </div>
     </Modal>

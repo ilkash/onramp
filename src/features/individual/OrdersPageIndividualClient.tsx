@@ -5,15 +5,37 @@ import Table from "@/components/ui/Table/Table";
 import TopBarAction from "@/components/ui/TopBarAction";
 import Pagination from "@/components/ui/Pagination";
 import { useIndividualOrders } from "@/hooks/useIndividualOrders";
+import CopyHash from "@/components/ui/CopyHash";
 
 const columns = [
-  { key: "accountId", label: "Account ID", width: "170px" },
-  { key: "transactionId", label: "Transaction ID", width: "160px" },
+  {
+    key: "accountId",
+    label: "Account ID",
+    width: "170px",
+    render: (value: unknown) => {
+      const str = String(value);
+      return str.length > 13 ? str.slice(0, 13) + "..." : str;
+    },
+  },
+  {
+    key: "transactionId",
+    label: "Transaction ID",
+    width: "160px",
+    render: (value: unknown) => {
+      const str = String(value);
+      return str.length > 13 ? str.slice(0, 13) + "..." : str;
+    },
+  },
   { key: "date", label: "Time and date", width: "180px" },
   { key: "pay", label: "You pay, EURO", width: "140px" },
   { key: "receive", label: "You receive", width: "120px" },
   { key: "method", label: "Payment method", width: "160px" },
-  { key: "hash", label: "Transaction HASH", width: "200px" },
+  {
+    key: "hash",
+    label: "Transaction HASH",
+    width: "200px",
+    render: (value: unknown) => <CopyHash value={String(value)} />,
+  },
   { key: "type", label: "Type", width: "100px" },
   { key: "status", label: "Status", width: "120px" },
   { key: "actions", label: "Actions", width: "80px", filterable: false },

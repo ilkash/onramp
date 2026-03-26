@@ -70,9 +70,25 @@ export const useAuth = () => {
       setLoading(false);
     }
   };
+  const resendCode = async (token: string) => {
+    try {
+      setLoading(true);
+      setError(null);
+      await authService.resend(token);
+      return true;
+    } catch (e: unknown) {
+      if (e instanceof AxiosError) {
+        setError(e.response?.data?.message || "Error");
+      }
+      return false;
+    } finally {
+      setLoading(false);
+    }
+  };
   return {
     sendCode,
     verifyCode,
+    resendCode,
     logout,
     loading,
     error,

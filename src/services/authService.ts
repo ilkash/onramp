@@ -24,8 +24,16 @@ export const authService = {
     return data;
   },
 
-  resend: async () => {
-    const { data } = await api.post("/auth/resend-code");
+  resend: async (token: string) => {
+    const { data } = await api.post(
+      "/auth/resend-code",
+      {},
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      },
+    );
     return data;
   },
   logout: async () => {

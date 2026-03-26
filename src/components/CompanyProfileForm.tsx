@@ -118,14 +118,17 @@ export default function CompanyProfileForm({ initialData, onSave }: Props) {
         <select
           value={form.country}
           onChange={(e) => handleChange("country", e.target.value)}
-          className="w-full border-b border-black/60 py-[10px]"
+          className="w-full border-b border-black/60 py-[10px] cursor-pointer"
         >
           <option value="" disabled>
             Select country
           </option>
           <option value="ITALY">Italy</option>
-          <option value="UKRAINE">Ukraine</option>
+          <option value="FRANCE">France</option>
+          <option value="GREAT_BRITAIN">Great Britain</option>
+          <option value="SPAIN">Spain</option>
           <option value="POLAND">Poland</option>
+          <option value="FINLAND">Finland</option>
         </select>
       </div>
 
@@ -170,7 +173,11 @@ export default function CompanyProfileForm({ initialData, onSave }: Props) {
       </div>
 
       <div className="flex justify-center">
-        <Button styleType="confirm" onClick={handleSave}>
+        <Button
+          styleType="confirm"
+          onClick={handleSave}
+          className="flex items-center justify-center text-[24px] text-black font-mono font-semibold cursor-pointer transition-transform hover:scale-105 "
+        >
           [SAVE]
         </Button>
       </div>

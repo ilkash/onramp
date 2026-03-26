@@ -28,13 +28,10 @@ export default function CabinetIndividualLayout({
 }) {
   return (
     <div className="flex h-screen w-screen">
-      {/* sidebar */}
-      <Sidebar menuItems={cabinetMenu} />
+      <Sidebar menuItems={cabinetMenu} showBuyCrypto={true} />
 
-      {/* divider */}
       <div className="w-[2px] lg:w-[3px] bg-[var(--color-gray)]" />
 
-      {/* content */}
       <div className="flex flex-col flex-1 min-w-0">
         <Topbar />
 

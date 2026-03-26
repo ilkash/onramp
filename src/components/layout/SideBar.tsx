@@ -14,9 +14,10 @@ type MenuItem = {
 
 type SidebarProps = {
   menuItems: MenuItem[];
+  showBuyCrypto?: boolean;
 };
 
-export default function Sidebar({ menuItems }: SidebarProps) {
+export default function Sidebar({ menuItems, showBuyCrypto }: SidebarProps) {
   const [open, setOpen] = useState(true);
   const pathname = usePathname();
 
@@ -40,7 +41,7 @@ export default function Sidebar({ menuItems }: SidebarProps) {
       </div>
 
       {open && (
-        <nav className="flex flex-col">
+        <nav className="flex flex-col mb-[50px]">
           {menuItems.map((item) => {
             const Icon = iconMap[item.icon];
             const isActive = pathname === item.href;
@@ -62,8 +63,19 @@ export default function Sidebar({ menuItems }: SidebarProps) {
           })}
         </nav>
       )}
-
-      <div className="absolute right-0 top-0 w-[2px] lg:w-[3px] h-full bg-[#D9D9D9]" />
+      {showBuyCrypto && (
+        <div className="mt-auto mb-[80px] px-2 lg:px-4">
+          <a
+            href="https://widget.onramp.itzeyz.com/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center justify-center text-[24px] text-black font-mono font-semibold cursor-pointer transition-transform hover:scale-105 "
+          >
+            [BUY CRYPTO]
+          </a>
+        </div>
+      )}
+      <div className=" w-[2px] lg:w-[3px] h-full bg-[#D9D9D9]" />
     </aside>
   );
 }

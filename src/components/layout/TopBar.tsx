@@ -74,7 +74,10 @@ export default function Topbar() {
       <div className="text-[20px] font-semibold">{title}</div>
 
       <div className="flex items-center gap-4 relative" ref={ref}>
-        <button onClick={() => setOpen((prev) => !prev)}>
+        <button
+          onClick={() => setOpen((prev) => !prev)}
+          className="cursor-pointer transition-transform hover:scale-120"
+        >
           <SettingsIcon />
         </button>
         <div className="text-[16px] font-medium uppercase">{roleLabel}</div>
@@ -83,7 +86,7 @@ export default function Topbar() {
           <div className="absolute right-[-24px] top-[48px] w-[224px] bg-[var(--color-red)]  shadow-md ">
             <button
               onClick={handleLogout}
-              className="group w-full flex items-center gap-2 px-4 py-3 hover:bg-gray-100 transition"
+              className="group w-full flex items-center gap-2 px-4 py-3 hover:bg-gray-100 transition cursor-pointer"
             >
               <LogoutIcon className="group-hover:text-black" />
               <span className="text-white text-[16px] font-semibold font-open-sans group-hover:text-black">

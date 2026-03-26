@@ -13,7 +13,9 @@ type Role = "individual" | "company";
 export default function LoginPage() {
   const router = useRouter();
   const { setEmail: setAuthEmail } = useAuthContext();
-
+  const [countdown, setCountdown] = useState(29);
+  const [canResend, setCanResend] = useState(false);
+  const { sendCode, verifyCode, resendCode, loading } = useAuth();
   const [step, setStep] = useState<"login" | "verify">("login");
   const [role, setRole] = useState<Role | null>(null);
 
@@ -21,18 +23,34 @@ export default function LoginPage() {
   const [code, setCode] = useState("");
   const [tempToken, setTempToken] = useState<string | null>(null);
 
-  const { sendCode, verifyCode, loading } = useAuth();
-
   const handleSendCode = async () => {
     if (!email || !role) return;
     const userType = role === "individual" ? "INDIVIDUAL" : "COMPANY";
-
     const data = await sendCode(email, userType);
-
     if (!data) return;
-
     setTempToken(data.accessToken);
     setStep("verify");
+    startCountdown();
+  };
+  const startCountdown = () => {
+    setCountdown(29);
+    setCanResend(false);
+    const interval = setInterval(() => {
+      setCountdown((prev) => {
+        if (prev <= 1) {
+          clearInterval(interval);
+          setCanResend(true);
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+  };
+
+  const handleResend = async () => {
+    if (!tempToken) return;
+    await resendCode(tempToken);
+    startCountdown();
   };
 
   const handleVerify = async () => {
@@ -95,7 +113,7 @@ export default function LoginPage() {
             <div className="flex mt-[10px]">
               <button
                 onClick={() => setRole("individual")}
-                className={`w-[108px] h-[48px] border border-[#E60A14] border-r-0 text-[14px] font-bold transition-all ${
+                className={`w-[108px] h-[48px] border cursor-pointer border-[#E60A14] border-r-0 text-[14px] font-bold transition-all ${
                   role === "individual"
                     ? "bg-[#E60A14] text-white"
                     : "bg-white text-black hover:bg-[#E60A14] hover:text-white"
@@ -106,7 +124,7 @@ export default function LoginPage() {
 
               <button
                 onClick={() => setRole("company")}
-                className={`w-[108px] h-[48px] border border-[#E60A14] text-[14px] font-bold transition-all ${
+                className={`w-[108px] h-[48px] border cursor-pointer border-[#E60A14] text-[14px] font-bold transition-all ${
                   role === "company"
                     ? "bg-[#E60A14] text-white"
                     : "bg-white text-black hover:bg-[#E60A14] hover:text-white"
@@ -119,7 +137,7 @@ export default function LoginPage() {
             <div className="flex justify-end">
               <button
                 onClick={handleSendCode}
-                className="font-medium"
+                className="font-semibold text-[24px] font-mono cursor-pointer transition-transform hover:scale-105"
                 disabled={!email || !role || loading}
               >
                 [SEND CODE]
@@ -159,12 +177,24 @@ export default function LoginPage() {
               />
             </div>
 
-            <div className="text-[12px] mb-6 font-medium font-mono text-black">
-              Resend code in 00:29
-            </div>
+            {canResend ? (
+              <button
+                onClick={handleResend}
+                className="text-[12px] font-mono underline mb-6 cursor-pointer hover:text-[var(--color-red)] transition-colors"
+              >
+                Resend code
+              </button>
+            ) : (
+              <div className="text-[12px] mb-6 font-medium font-mono text-black">
+                Resend code in 00:{String(countdown).padStart(2, "0")}
+              </div>
+            )}
 
             <div className="flex justify-end">
-              <button onClick={handleVerify} className="font-medium">
+              <button
+                onClick={handleVerify}
+                className="font-semibold text-[24px] font-mono cursor-pointer transition-transform hover:scale-105"
+              >
                 [CONFIRM AND PROCEED]
               </button>
             </div>

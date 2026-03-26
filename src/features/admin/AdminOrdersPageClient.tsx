@@ -9,8 +9,24 @@ import { useAdminOrders } from "@/hooks/useAdminOrders";
 import CopyHash from "@/components/ui/CopyHash";
 
 const columns: Column[] = [
-  { key: "accountId", label: "Account ID", width: "170px" },
-  { key: "transactionId", label: "Transaction ID", width: "160px" },
+  {
+    key: "accountId",
+    label: "Account ID",
+    width: "170px",
+    render: (value: unknown) => {
+      const str = String(value);
+      return str.length > 13 ? str.slice(0, 13) + "..." : str;
+    },
+  },
+  {
+    key: "transactionId",
+    label: "Transaction ID",
+    width: "160px",
+    render: (value: unknown) => {
+      const str = String(value);
+      return str.length > 13 ? str.slice(0, 13) + "..." : str;
+    },
+  },
   { key: "date", label: "Time and date", width: "180px" },
   { key: "pay", label: "You pay, EURO", width: "140px" },
   { key: "receive", label: "You receive", width: "120px" },

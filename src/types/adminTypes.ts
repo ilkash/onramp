@@ -64,4 +64,15 @@ export type Account = {
   totalSum: string;
   types: string[];
   transactionsCount: number;
+  registration: {
+    id: string;
+    userId: string;
+    userType: "INDIVIDUAL" | "COMPANY";
+    fullName: string | null;
+    companyName: string | null;
+    registrationNumber: string | null;
+    contactPerson: string | null;
+    phone: string | null;
+    country: string | null;
+  } | null;
 };
