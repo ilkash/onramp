@@ -30,12 +30,21 @@ export default function IndividualForm({ value, onChange }: Props) {
         </div>
         <div className="flex flex-col">
           <ThemedText type="formModal">Country</ThemedText>
-          <input
+          <select
             value={value.country}
             onChange={(e) => onChange("country", e.target.value)}
-            placeholder="Italy"
-            className="border-b border-[#262932] py-2 text-[14px]"
-          />
+            className="border-b border-[#262932] py-2 text-[14px] bg-transparent cursor-pointer outline-none"
+          >
+            <option value="" disabled>
+              Select country
+            </option>
+            <option value="ITALY">Italy</option>
+            <option value="FRANCE">France</option>
+            <option value="GREAT_BRITAIN">Great Britain</option>
+            <option value="SPAIN">Spain</option>
+            <option value="POLAND">Poland</option>
+            <option value="FINLAND">Finland</option>
+          </select>
         </div>
       </div>
 

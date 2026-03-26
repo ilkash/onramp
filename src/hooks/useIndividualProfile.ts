@@ -20,10 +20,7 @@ export const useIndividualProfile = () => {
   const fetchProfile = async (email: string) => {
     try {
       setLoading(true);
-
       const data = await individualService.getProfilesByEmail(email);
-      // const found = data.find((item) => item.email === email) || null;
-
       if (data.length > 0) {
         setProfile(data[0]);
       } else {
@@ -35,24 +32,27 @@ export const useIndividualProfile = () => {
   };
 
   const saveProfile = async (form: FormPayload) => {
-    if (!profile) {
-      const created = await individualService.createProfile(
-        form as CreateIndividualProfilePayload,
-      );
-      setProfile(created);
-      return;
+    try {
+      if (!profile) {
+        const created = await individualService.createProfile(
+          form as CreateIndividualProfilePayload,
+        );
+        setProfile(created);
+      } else {
+        const updated = await individualService.updateProfile(
+          profile.id,
+          form as UpdateIndividualProfilePayload,
+        );
+        setProfile((prev) => ({
+          ...prev!,
+          ...updated,
+          email: prev!.email,
+        }));
+      }
+      return true;
+    } catch {
+      return false;
     }
-
-    const updated = await individualService.updateProfile(
-      profile.id,
-      form as UpdateIndividualProfilePayload,
-    );
-
-    setProfile((prev) => ({
-      ...prev!,
-      ...updated,
-      email: prev!.email,
-    }));
   };
 
   return {

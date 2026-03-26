@@ -6,6 +6,7 @@ import Logo from "@/components/ui/icons/Logo";
 import IndividualForm from "./IndividualForm";
 import CompanyForm from "./CompanyForm";
 import { useAdminCreateClient } from "@/hooks/useAdminCreateClient";
+import Toast from "@/components/ui/Toast";
 
 type Tab = "individual" | "company";
 
@@ -49,7 +50,12 @@ export default function CreateClientModal({
     updateIndividual,
     updateCompany,
     loading,
+    error,
   } = useAdminCreateClient();
+  const [toast, setToast] = useState<{
+    message: string;
+    type: "success" | "error";
+  } | null>(null);
 
   const [individualForm, setIndividualForm] = useState({
     fullName: "",
@@ -70,12 +76,8 @@ export default function CreateClientModal({
   useEffect(() => {
     if (!editData) return;
     setTab(editData.userType === "COMPANY" ? "company" : "individual");
-    if (editData.individual) {
-      setIndividualForm(editData.individual);
-    }
-    if (editData.company) {
-      setCompanyForm(editData.company);
-    }
+    if (editData.individual) setIndividualForm(editData.individual);
+    if (editData.company) setCompanyForm(editData.company);
   }, [editData]);
 
   const handleSubmit = async () => {
@@ -108,8 +110,16 @@ export default function CreateClientModal({
     }
 
     if (success) {
-      onSuccess?.();
-      onClose();
+      setToast({
+        message: isEdit ? "Client updated!" : "Client created!",
+        type: "success",
+      });
+      setTimeout(() => {
+        onSuccess?.();
+        onClose();
+      }, 1000);
+    } else {
+      setToast({ message: error || "Something went wrong", type: "error" });
     }
   };
 
@@ -165,6 +175,14 @@ export default function CreateClientModal({
               : "[CONFIRM AND PROCEED]"}
         </button>
       </div>
+
+      {toast && (
+        <Toast
+          message={toast.message}
+          type={toast.type}
+          onClose={() => setToast(null)}
+        />
+      )}
     </Modal>
   );
 }
