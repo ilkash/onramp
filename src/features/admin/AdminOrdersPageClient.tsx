@@ -28,7 +28,7 @@ const columns: Column[] = [
     },
   },
   { key: "date", label: "Time and date", width: "180px" },
-  { key: "pay", label: "You pay, EURO", width: "140px" },
+  { key: "pay", label: "Pay,€", width: "140px" },
   { key: "receive", label: "You receive", width: "120px" },
   { key: "method", label: "Payment method", width: "160px" },
   {
