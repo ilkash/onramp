@@ -22,9 +22,7 @@ export const useCompanyProfile = () => {
   const fetchProfile = async (email: string) => {
     try {
       setLoading(true);
-
       const data = await companyService.getProfilesByEmail(email);
-
       if (data.length > 0) {
         setProfile(data[0]);
       } else {
@@ -36,24 +34,27 @@ export const useCompanyProfile = () => {
   };
 
   const saveProfile = async (form: FormPayload) => {
-    if (!profile) {
-      const created = await companyService.createProfile(
-        form as CreateCompanyProfilePayload,
-      );
-      setProfile(created);
-      return;
+    try {
+      if (!profile) {
+        const created = await companyService.createProfile(
+          form as CreateCompanyProfilePayload,
+        );
+        setProfile(created);
+      } else {
+        const updated = await companyService.updateProfile(
+          profile.id,
+          form as UpdateCompanyProfilePayload,
+        );
+        setProfile((prev) => ({
+          ...prev!,
+          ...updated,
+          email: prev!.email,
+        }));
+      }
+      return true;
+    } catch {
+      return false;
     }
-
-    const updated = await companyService.updateProfile(
-      profile.id,
-      form as UpdateCompanyProfilePayload,
-    );
-
-    setProfile((prev) => ({
-      ...prev!,
-      ...updated,
-      email: prev!.email,
-    }));
   };
 
   return {

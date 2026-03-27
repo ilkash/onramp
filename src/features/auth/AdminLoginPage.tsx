@@ -17,13 +17,29 @@ export default function AdminLoginPage() {
   const { sendCode, verifyCode, resendCode } = useAdminAuth();
   const [tempToken, setTempToken] = useState("");
 
+  const [emailError, setEmailError] = useState("");
+  const [codeError, setCodeError] = useState("");
+
+  const validateEmail = (val: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val);
+
   const handleSendCode = async () => {
+    if (!email.trim()) {
+      setEmailError("Email is required");
+      return;
+    } else if (!validateEmail(email)) {
+      setEmailError("Invalid email address");
+      return;
+    } else {
+      setEmailError("");
+    }
+
     const data = await sendCode(email);
     if (!data) return;
     setTempToken(data.accessToken);
     setStep("verify");
     startCountdown();
   };
+
   const startCountdown = () => {
     setCountdown(29);
     setCanResend(false);
@@ -38,19 +54,34 @@ export default function AdminLoginPage() {
       });
     }, 1000);
   };
+
   const handleResend = async () => {
     await resendCode(tempToken);
     startCountdown();
   };
+
   const handleVerify = async () => {
     if (!tempToken) return;
 
+    if (!code.trim()) {
+      setCodeError("Code is required");
+      return;
+    } else if (!/^\d{6}$/.test(code)) {
+      setCodeError("Code must be 6 digits");
+      return;
+    } else {
+      setCodeError("");
+    }
+
     const success = await verifyCode(code, tempToken);
 
-    if (success) {
-      document.cookie = "role=ADMIN; path=/";
-      router.push("/admin/accounts");
+    if (!success) {
+      setCodeError("Invalid or expired code");
+      return;
     }
+
+    document.cookie = "role=ADMIN; path=/";
+    router.push("/admin/accounts");
   };
 
   return (
@@ -70,16 +101,23 @@ export default function AdminLoginPage() {
               <label>
                 <ThemedText type="input_individual">Your email</ThemedText>
               </label>
-
               <input
                 value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                onChange={(e) => {
+                  setEmail(e.target.value);
+                  setEmailError("");
+                }}
                 placeholder="admin@test.com"
-                className="w-full border-b border-[#262932] py-2 outline-none mb-4"
+                className={`w-full border-b py-2 outline-none mb-1 ${emailError ? "border-[var(--color-red)]" : "border-[#262932]"}`}
               />
+              {emailError && (
+                <span className="text-[var(--color-red)] text-[11px] font-mono">
+                  {emailError}
+                </span>
+              )}
             </div>
 
-            <div className="flex justify-end">
+            <div className="flex justify-end mt-4">
               <button
                 onClick={handleSendCode}
                 className="font-semibold text-[24px] font-mono cursor-pointer transition-transform hover:scale-105"
@@ -102,13 +140,20 @@ export default function AdminLoginPage() {
                 disabled
                 className="w-full border-b border-[#262932] py-2 text-gray-400 mb-4"
               />
-
               <input
                 value={code}
-                onChange={(e) => setCode(e.target.value)}
+                onChange={(e) => {
+                  setCode(e.target.value);
+                  setCodeError("");
+                }}
                 placeholder="Verification code"
-                className="w-full border-b border-[#262932] py-2 mb-2"
+                className={`w-full border-b py-2 mb-1 outline-none ${codeError ? "border-[var(--color-red)]" : "border-[#262932]"}`}
               />
+              {codeError && (
+                <span className="text-[var(--color-red)] text-[11px] font-mono">
+                  {codeError}
+                </span>
+              )}
             </div>
 
             {canResend ? (

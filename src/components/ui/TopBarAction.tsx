@@ -35,7 +35,7 @@ export default function TableToolbar({
           )}
         </div>
 
-        <div className="flex items-center gap-7">
+        <div className="flex items-center justify-center gap-7">
           <button
             onClick={onExport}
             className="bg-[var(--color-red)] text-white px-4 py-2 text-[14px] mt-[9px] mb-[22px] cursor-pointer hover:opacity-80 transition-opacity"
@@ -48,7 +48,7 @@ export default function TableToolbar({
 
           <button
             onClick={onRefresh}
-            className="flex items-center justify-center cursor-pointer transition-transform hover:scale-115"
+            className="flex items-center justify-center cursor-pointer transition-transform hover:scale-115 mt-[9px] mb-[22px]"
           >
             <ReloadIcon />
           </button>
