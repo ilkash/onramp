@@ -54,14 +54,18 @@ export default function PhoneInput({
 
   useEffect(() => {
     if (!initialPhone) return;
+    console.log("PhoneInput initialPhone:", initialPhone);
     const detected = detectCountryByPhone(initialPhone);
+    console.log("detected:", detected?.phoneCode);
     if (detected) {
       setSelectedCountry(detected);
       onCountryChange?.(detected.phoneCode);
       const digits = initialPhone
         .replace(detected.phoneCode, "")
         .replace(/\D/g, "");
+      console.log("digits:", digits);
       const mask = phoneMasks[detected.phoneCode];
+      console.log("masked:", mask ? applyMask(digits, mask) : digits);
       onChange(mask ? applyMask(digits, mask) : digits);
     }
   }, [initialPhone]);

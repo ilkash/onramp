@@ -49,6 +49,7 @@ export default function ProfilePageIndividualClient() {
             });
 
             if (success) {
+              await fetchProfile(email);
               setToast({ message: "Profile saved!", type: "success" });
             } else {
               setToast({ message: "Something went wrong", type: "error" });

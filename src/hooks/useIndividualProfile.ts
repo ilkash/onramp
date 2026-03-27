@@ -43,6 +43,7 @@ export const useIndividualProfile = () => {
           profile.id,
           form as UpdateIndividualProfilePayload,
         );
+        console.log("updated phone:", updated.phone);
         setProfile((prev) => ({
           ...prev!,
           ...updated,

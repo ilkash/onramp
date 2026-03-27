@@ -27,11 +27,24 @@ export default function CopyHash({ value }: Props) {
         {short}
       </span>
 
-      <button onClick={handleCopy} className="group">
-        {/*
-         */}
-        {/* </div> */}
-        <CopyIcon />
+      <button
+        onClick={handleCopy}
+        className="group cursor-pointer  transition-transform hover:scale-105"
+      >
+        {copied ? (
+          <svg
+            className="w-4 h-4 text-[#E60A14]"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth={3}
+            viewBox="0 0 24 24"
+          >
+            <path d="M5 13l4 4L19 7" />
+          </svg>
+        ) : (
+          // 📋 COPY ICON
+          <CopyIcon />
+        )}
       </button>
     </div>
   );

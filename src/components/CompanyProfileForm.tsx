@@ -59,15 +59,39 @@ export default function CompanyProfileForm({ initialData, onSave }: Props) {
 
   useEffect(() => {
     if (!initialData) return;
+    setReady(false);
 
     const rawPhone = initialData.phone ?? "";
     const detected = [...availableCountries]
       .sort((a, b) => b.phoneCode.length - a.phoneCode.length)
       .find((c) => rawPhone.startsWith(c.phoneCode));
 
-    const phoneDigits = detected
+    const digits = detected
       ? rawPhone.replace(detected.phoneCode, "").replace(/\D/g, "")
       : rawPhone;
+
+    // ← застосовуй маску одразу
+    const phoneMasks: Record<string, string> = {
+      "+39": "### #######",
+      "+33": "# ## ## ## ##",
+      "+44": "#### ######",
+      "+34": "### ### ###",
+      "+48": "### ### ###",
+      "+358": "## ### ####",
+    };
+
+    const applyMask = (d: string, mask: string) => {
+      let result = "";
+      let di = 0;
+      for (let i = 0; i < mask.length; i++) {
+        if (di >= d.length) break;
+        result += mask[i] === "#" ? d[di++] : mask[i];
+      }
+      return result;
+    };
+
+    const mask = detected ? phoneMasks[detected.phoneCode] : undefined;
+    const phoneFormatted = mask ? applyMask(digits, mask) : digits;
 
     if (detected) setPhoneCode(detected.phoneCode);
 
@@ -76,11 +100,12 @@ export default function CompanyProfileForm({ initialData, onSave }: Props) {
       registrationNumber: initialData.registrationNumber ?? "",
       country: initialData.country ?? "",
       contactPerson: initialData.contactPerson ?? "",
-      phone: phoneDigits,
+      phone: phoneFormatted,
       email: initialData.email ?? "",
       confirm: true,
     });
-    setReady(true);
+
+    setTimeout(() => setReady(true), 0);
   }, [initialData]);
 
   const handleChange = (
