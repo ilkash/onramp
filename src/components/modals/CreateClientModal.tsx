@@ -7,6 +7,7 @@ import IndividualForm from "./IndividualForm";
 import CompanyForm from "./CompanyForm";
 import { useAdminCreateClient } from "@/hooks/useAdminCreateClient";
 import Toast from "@/components/ui/Toast";
+import { availableCountries } from "@/constants/countries";
 
 type Tab = "individual" | "company";
 
@@ -96,8 +97,49 @@ export default function CreateClientModal({
   useEffect(() => {
     if (!editData) return;
     setTab(editData.userType === "COMPANY" ? "company" : "individual");
-    if (editData.individual) setIndividualForm(editData.individual);
-    if (editData.company) setCompanyForm(editData.company);
+
+    const phoneMasks: Record<string, string> = {
+      "+39": "### #######",
+      "+33": "# ## ## ## ##",
+      "+44": "#### ######",
+      "+34": "### ### ###",
+      "+48": "### ### ###",
+      "+358": "## ### ####",
+    };
+
+    const applyPhoneMask = (rawPhone: string) => {
+      const detected = [...availableCountries]
+        .sort((a, b) => b.phoneCode.length - a.phoneCode.length)
+        .find((c) => rawPhone.startsWith(c.phoneCode));
+
+      if (!detected) return { phone: rawPhone, code: "+39" };
+
+      const digits = rawPhone
+        .replace(detected.phoneCode, "")
+        .replace(/\D/g, "");
+      const mask = phoneMasks[detected.phoneCode];
+
+      let masked = "";
+      let di = 0;
+      for (let i = 0; i < mask.length; i++) {
+        if (di >= digits.length) break;
+        masked += mask[i] === "#" ? digits[di++] : mask[i];
+      }
+
+      return { phone: masked, code: detected.phoneCode };
+    };
+
+    if (editData.individual) {
+      const { phone, code } = applyPhoneMask(editData.individual.phone);
+      setIndividualPhoneCode(code);
+      setIndividualForm({ ...editData.individual, phone });
+    }
+
+    if (editData.company) {
+      const { phone, code } = applyPhoneMask(editData.company.phone);
+      setCompanyPhoneCode(code);
+      setCompanyForm({ ...editData.company, phone });
+    }
   }, [editData]);
 
   const validateEmail = (email: string) =>

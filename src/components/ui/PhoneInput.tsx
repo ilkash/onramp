@@ -128,7 +128,7 @@ export default function PhoneInput({
           height={14}
         />
         <span
-          className={`text-[12px] transition-transform ${open ? "rotate-180" : ""}`}
+          className={`text-[12px] transition-transform ${open ? "" : "rotate-180"}`}
         >
           ▲
         </span>
